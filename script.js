@@ -8,14 +8,16 @@ let obstacles = [];
 let playerSize = 50; // Initial size of player
 let itemSize = 30;   // Initial size of item
 
-document.addEventListener('keydown', movePlayer);
+document.getElementById('up').addEventListener('click', () => movePlayer('ArrowUp'));
+document.getElementById('down').addEventListener('click', () => movePlayer('ArrowDown'));
+document.getElementById('left').addEventListener('click', () => movePlayer('ArrowLeft'));
+document.getElementById('right').addEventListener('click', () => movePlayer('ArrowRight'));
 
-function movePlayer(event) {
-  const key = event.key;
+function movePlayer(direction) {
   const playerRect = player.getBoundingClientRect();
   const gameRect = gameContainer.getBoundingClientRect();
 
-  switch (key) {
+  switch (direction) {
     case 'ArrowUp':
       if (playerRect.top > gameRect.top) player.style.top = `${player.offsetTop - 10}px`;
       break;
@@ -102,35 +104,3 @@ function checkCollision() {
 
 function moveItem() {
   const gameRect = gameContainer.getBoundingClientRect();
-  const maxTop = gameRect.height - item.clientHeight;
-  const maxLeft = gameRect.width - item.clientWidth;
-
-  item.style.top = `${Math.random() * maxTop}px`;
-  item.style.left = `${Math.random() * maxLeft}px`;
-}
-
-function addObstacle() {
-  const obstacle = document.createElement('div');
-  obstacle.classList.add('obstacle');
-  gameContainer.appendChild(obstacle);
-  obstacles.push(obstacle);
-}
-
-function resetGame() {
-  score = 0;
-  scoreDisplay.textContent = `Score: ${score}`;
-  player.style.top = '90%';
-  player.style.left = '45%';
-  playerSize = 50; // Reset size
-  itemSize = 30;   // Reset size
-  player.style.width = `${playerSize}px`;
-  player.style.height = `${playerSize}px`;
-  item.style.width = `${itemSize}px`;
-  item.style.height = `${itemSize}px`;
-  moveItem();
-  obstacles.forEach(obstacle => obstacle.remove());
-  obstacles = [];
-}
-
-// Initialize the game
-moveItem();
