@@ -104,3 +104,35 @@ function checkCollision() {
 
 function moveItem() {
   const gameRect = gameContainer.getBoundingClientRect();
+  const maxTop = gameRect.height - item.clientHeight;
+  const maxLeft = gameRect.width - item.clientWidth;
+
+  item.style.top = `${Math.random() * maxTop}px`;
+  item.style.left = `${Math.random() * maxLeft}px`;
+}
+
+function addObstacle() {
+  const obstacle = document.createElement('div');
+  obstacle.classList.add('obstacle');
+  gameContainer.appendChild(obstacle);
+  obstacles.push(obstacle);
+}
+
+function resetGame() {
+  score = 0;
+  scoreDisplay.textContent = `Score: ${score}`;
+  player.style.top = '90%';
+  player.style.left = '45%';
+  playerSize = 50; // Reset size
+  itemSize = 30;   // Reset size
+  player.style.width = `${playerSize}px`;
+  player.style.height = `${playerSize}px`;
+  item.style.width = `${itemSize}px`;
+  item.style.height = `${itemSize}px`;
+  moveItem();
+  obstacles.forEach(obstacle => obstacle.remove());
+  obstacles = [];
+}
+
+// Initialize the game
+moveItem();
