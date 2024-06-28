@@ -5,6 +5,8 @@ const gameContainer = document.getElementById('gameContainer');
 const scoreDisplay = document.getElementById('score');
 let score = 0;
 let obstacles = [];
+let playerSize = 50; // Initial size of player
+let itemSize = 30;   // Initial size of item
 
 document.addEventListener('keydown', movePlayer);
 
@@ -27,6 +29,10 @@ function movePlayer(event) {
       if (playerRect.right < gameRect.right) player.style.left = `${player.offsetLeft + 10}px`;
       break;
   }
+
+  // Decrease score by 1 for every step
+  score -= 1;
+  scoreDisplay.textContent = `Score: ${score}`;
 
   moveObstacles();
   checkCollision();
@@ -69,6 +75,14 @@ function checkCollision() {
     scoreDisplay.textContent = `Score: ${score}`;
     moveItem();
     addObstacle();
+
+    // Increase size by 10%
+    playerSize *= 1.1;
+    itemSize *= 1.1;
+    player.style.width = `${playerSize}px`;
+    player.style.height = `${playerSize}px`;
+    item.style.width = `${itemSize}px`;
+    item.style.height = `${itemSize}px`;
   }
 
   obstacles.forEach(obstacle => {
@@ -107,6 +121,12 @@ function resetGame() {
   scoreDisplay.textContent = `Score: ${score}`;
   player.style.top = '90%';
   player.style.left = '45%';
+  playerSize = 50; // Reset size
+  itemSize = 30;   // Reset size
+  player.style.width = `${playerSize}px`;
+  player.style.height = `${playerSize}px`;
+  item.style.width = `${itemSize}px`;
+  item.style.height = `${itemSize}px`;
   moveItem();
   obstacles.forEach(obstacle => obstacle.remove());
   obstacles = [];
