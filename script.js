@@ -8,6 +8,7 @@ let obstacles = [];
 let playerSize = 50; // Initial size of player
 let itemSize = 30;   // Initial size of item
 
+// Add event listeners for the buttons
 document.getElementById('up').addEventListener('click', () => movePlayer('ArrowUp'));
 document.getElementById('down').addEventListener('click', () => movePlayer('ArrowDown'));
 document.getElementById('left').addEventListener('click', () => movePlayer('ArrowLeft'));
@@ -16,6 +17,8 @@ document.getElementById('right').addEventListener('click', () => movePlayer('Arr
 function movePlayer(direction) {
   const playerRect = player.getBoundingClientRect();
   const gameRect = gameContainer.getBoundingClientRect();
+
+  console.log(`Moving: ${direction}`); // Debug message
 
   switch (direction) {
     case 'ArrowUp':
