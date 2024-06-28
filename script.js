@@ -3,40 +3,43 @@ const player = document.getElementById('player');
 const item = document.getElementById('item');
 const gameContainer = document.getElementById('gameContainer');
 const scoreDisplay = document.getElementById('score');
+const shareButton = document.getElementById('share');
 let score = 0;
 let obstacles = [];
-let playerSize = 50; // Initial size of player
-let itemSize = 30;   // Initial size of item
+let playerSize = 20; // Size of player
+let itemSize = 20;   // Size of item
+let moveCount = 0;   // Track moves for shortest path calculation
+let shortestPath = 20; // Assuming shortest path is a straight line (can be adjusted based on actual game logic)
 
-// Add event listeners for the buttons
 document.getElementById('up').addEventListener('click', () => movePlayer('ArrowUp'));
 document.getElementById('down').addEventListener('click', () => movePlayer('ArrowDown'));
 document.getElementById('left').addEventListener('click', () => movePlayer('ArrowLeft'));
 document.getElementById('right').addEventListener('click', () => movePlayer('ArrowRight'));
 
+shareButton.addEventListener('click', shareOnWhatsApp);
+
 function movePlayer(direction) {
   const playerRect = player.getBoundingClientRect();
   const gameRect = gameContainer.getBoundingClientRect();
 
-  console.log(`Moving: ${direction}`); // Debug message
-
   switch (direction) {
     case 'ArrowUp':
-      if (playerRect.top > gameRect.top) player.style.top = `${player.offsetTop - 10}px`;
+      if (playerRect.top > gameRect.top) player.style.top = `${player.offsetTop - 20}px`;
       break;
     case 'ArrowDown':
-      if (playerRect.bottom < gameRect.bottom) player.style.top = `${player.offsetTop + 10}px`;
+      if (playerRect.bottom < gameRect.bottom) player.style.top = `${player.offsetTop + 20}px`;
       break;
     case 'ArrowLeft':
-      if (playerRect.left > gameRect.left) player.style.left = `${player.offsetLeft - 10}px`;
+      if (playerRect.left > gameRect.left) player.style.left = `${player.offsetLeft - 20}px`;
       break;
     case 'ArrowRight':
-      if (playerRect.right < gameRect.right) player.style.left = `${player.offsetLeft + 10}px`;
+      if (playerRect.right < gameRect.right) player.style.left = `${player.offsetLeft + 20}px`;
       break;
   }
 
   // Decrease score by 1 for every step
   score -= 1;
+  moveCount += 1;
   scoreDisplay.textContent = `Score: ${score}`;
 
   moveObstacles();
@@ -51,16 +54,16 @@ function moveObstacles() {
 
     switch (direction) {
       case 0: // Move up
-        if (obstacleRect.top > gameRect.top) obstacle.style.top = `${obstacle.offsetTop - 10}px`;
+        if (obstacleRect.top > gameRect.top) obstacle.style.top = `${obstacle.offsetTop - 20}px`;
         break;
       case 1: // Move down
-        if (obstacleRect.bottom < gameRect.bottom) obstacle.style.top = `${obstacle.offsetTop + 10}px`;
+        if (obstacleRect.bottom < gameRect.bottom) obstacle.style.top = `${obstacle.offsetTop + 20}px`;
         break;
       case 2: // Move left
-        if (obstacleRect.left > gameRect.left) obstacle.style.left = `${obstacle.offsetLeft - 10}px`;
+        if (obstacleRect.left > gameRect.left) obstacle.style.left = `${obstacle.offsetLeft - 20}px`;
         break;
       case 3: // Move right
-        if (obstacleRect.right < gameRect.right) obstacle.style.left = `${obstacle.offsetLeft + 10}px`;
+        if (obstacleRect.right < gameRect.right) obstacle.style.left = `${obstacle.offsetLeft + 20}px`;
         break;
     }
   });
@@ -76,7 +79,11 @@ function checkCollision() {
     playerRect.top < itemRect.bottom &&
     playerRect.bottom > itemRect.top
   ) {
-    score += 10;
+    score += 20;
+    if (moveCount <= shortestPath) {
+      score += 5; // Bonus for shortest path
+    }
+    moveCount = 0; // Reset move count for next item
     scoreDisplay.textContent = `Score: ${score}`;
     moveItem();
     addObstacle();
@@ -100,6 +107,7 @@ function checkCollision() {
       playerRect.bottom > obstacleRect.top
     ) {
       alert('Game Over!');
+      shareButton.style.display = 'block'; // Show the share button
       resetGame();
     }
   });
@@ -124,10 +132,10 @@ function addObstacle() {
 function resetGame() {
   score = 0;
   scoreDisplay.textContent = `Score: ${score}`;
-  player.style.top = '90%';
-  player.style.left = '45%';
-  playerSize = 50; // Reset size
-  itemSize = 30;   // Reset size
+  player.style.top = '360px';
+  player.style.left = '180px';
+  playerSize = 20; // Reset size
+  itemSize = 20;   // Reset size
   player.style.width = `${playerSize}px`;
   player.style.height = `${playerSize}px`;
   item.style.width = `${itemSize}px`;
@@ -135,6 +143,21 @@ function resetGame() {
   moveItem();
   obstacles.forEach(obstacle => obstacle.remove());
   obstacles = [];
+}
+
+function shareOnWhatsApp() {
+  const screenshotCanvas = document.createElement('canvas');
+  screenshotCanvas.width = gameContainer.offsetWidth;
+  screenshotCanvas.height = gameContainer.offsetHeight;
+  const context = screenshotCanvas.getContext('2d');
+
+  html2canvas(gameContainer).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const shareText = `I scored ${score} points in Mahabali's Stepping Stones!`;
+    const shareLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}%0A${encodeURIComponent(imgData)}`;
+
+    window.open(shareLink, '_blank');
+  });
 }
 
 // Initialize the game
